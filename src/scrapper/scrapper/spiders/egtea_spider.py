@@ -7,11 +7,12 @@ class EgteaSpiderSpider(scrapy.Spider):
     start_urls = ["https://cbs.ic.gatech.edu/fpv/"]
 
     def parse(self, response):
-        for div in response.css('div.one'):
-            button_reference = div.css('h2::text').get().strip()
-            links = div.css('a::attr(href)').getall()
+        for div_section in response.xpath('//div[@class="one"]'):
+            links = div_section.xpath('.//a')
             for link in links:
-                yield {button_reference: link}
+                link_text = link.xpath('text()').get().strip()
+                link_href = link.xpath('@href').get()
+                yield {link_text: link_href}
 
         for a_tag in response.css('div.releases ul a'):
             link = a_tag.attrib['href']
