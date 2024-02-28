@@ -1,17 +1,14 @@
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-from scrapper.scrapper.spiders.egtea_spider import EgteaSpiderSpider
+from urllib.parse import urlparse
 import argparse
 import json
-
-def setup_crawler() -> None:
-    process = CrawlerProcess(get_project_settings())
-    process.crawl(EgteaSpiderSpider)
-    process.start()
+import os
+import sys
 
 
-def download_files():
-    pass
+def extract_fname_from_url(url: str) -> str:
+    parsed_url = urlparse(url)
+    return os.path.basename(parsed_url.path)
+
 
 def load_json() -> dict:
     try:
@@ -39,6 +36,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('-o','--out', type=str, action='store_true', required=True, help='Output directory to save the data')
     parser.add_argument('-a','--all', type=str, action='store_true', help='Get all the data')
     return parser.parse_args()
+
 
 
 """
@@ -107,10 +105,9 @@ def action_labels_new(args):
 """
 
 
-def main():
-    data = load_json()
-    print(json.dumps(data, indent=4, sort_keys=True))
 
 
 if __name__ == '__main__':
-    main()
+    URLS = load_json()
+    #URL = URLS[0]['Readme File']
+    #readme_key, readme_value = list(URLS[0].items())[0]

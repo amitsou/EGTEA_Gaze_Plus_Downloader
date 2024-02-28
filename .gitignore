@@ -88,3 +88,6 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+/src/downloader/download_test.py
+google-chrome-stable_current_amd64.deb
