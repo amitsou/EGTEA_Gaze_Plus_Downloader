@@ -89,5 +89,11 @@ target/
 # Mypy cache
 .mypy_cache/
 
+#dev test files
 /src/downloader/download_test.py
+
+#chrome deb
 google-chrome-stable_current_amd64.deb
+
+#scrapy
+/src/scrapper/.scrapy/
