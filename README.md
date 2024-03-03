@@ -90,5 +90,14 @@ EGTEA Gaze + Unofficial Downloader
     ├── readme.md
     └── tmp/
         └── video_links.txt
-
    ```
+8. Citing
+    ```
+    @inproceedings{li2018eye,
+        title={In the eye of beholder: Joint learning of gaze and actions in first person video},
+        author={Li, Yin and Liu, Miao and Rehg, James M},
+        booktitle={Proceedings of the European conference on computer vision (ECCV)},
+        pages={619--635},
+        year={2018}
+    }
+    ```
