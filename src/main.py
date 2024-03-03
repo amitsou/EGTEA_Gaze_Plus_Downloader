@@ -15,16 +15,18 @@ def download_file(key, url, output_directory):
     if download_response:
         insert_to_db(key, url, Utils.get_timestamp())
 
-
 def process_raw_videos(egtea_urls, egtea_dir):
     fname = re.search(r'/([^/]+\.\w+)\?dl=0$', egtea_urls.get('Links to raw videos (28G)')).group(1)
     raw_videos_path = os.path.join(egtea_dir, 'tmp', fname)
+
     db_result = search_url(egtea_urls.get('Links to raw videos (28G)'))
 
     if os.path.exists(raw_videos_path) and db_result:
         video_urls = Utils.extract_video_links_from_txt(raw_videos_path)
     else:
-        downloader = Downloader(output_directory=os.path.join(egtea_dir, 'tmp'))
+        if not os.path.exists(os.path.join(egtea_dir,'tmp')):
+            os.mkdir(os.path.join(egtea_dir,'tmp'))
+        downloader = Downloader(output_directory=os.path.join(egtea_dir,'tmp'))
         download_response = downloader.download_file(egtea_urls.get('Links to raw videos (28G)'))
 
         if download_response:
@@ -35,13 +37,12 @@ def process_raw_videos(egtea_urls, egtea_dir):
 
 def main():
     print(Utils.ascii_to_color(pyfiglet.figlet_format("Welcom to Egtea Gaze +",font="slant"),'yellow'))
-
     init_db()
     egtea_urls = Utils.load_json('../data/egtea_links.json')
     egtea_urls = {list(link.keys())[0]: list(link.values())[0] for link in egtea_urls}
 
     args = Utils.parse_args()
-    egtea_dir = ''.join((args.out, '/EGTEA'))
+    egtea_dir = os.path.join(args.out, 'EGTEA')
     Utils.create_directory(egtea_dir)
 
     download_actions = {
@@ -60,7 +61,6 @@ def main():
     }
 
     file_download_mapping = {} # dicionary form:{filename: [url, output_directory]}
-
     if args.all:
         for action, (key, path) in download_actions.items():
             if action != 'raw_videos':
@@ -79,7 +79,7 @@ def main():
         for url in raw_video_urls:
             filename = os.path.splitext(re.search(r'/([^/]+\.\w+)\?dl=0$', url).group(1))[0]
             if filename:
-                file_download_mapping[filename] = [url, os.path.join(args.out, 'Raw_Videos')]
+                file_download_mapping[filename] = [url, os.path.join(egtea_dir, 'Raw_Videos')]
 
     threads = []
     for key, value in file_download_mapping.items():
@@ -96,3 +96,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    #TODO: Create docs
+    #TODO: In docs add the steps to download the dataset and the tree structure of the dataset
