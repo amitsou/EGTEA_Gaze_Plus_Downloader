@@ -45,19 +45,21 @@ EGTEA Gaze + Unofficial Downloader
    ```
    The script can be executed using the following arguments:
 
+   ```bash
    `--readme`: Download the Readme file.
-   `--recipes`: Download the Recipes.
-   `--raw_videos`: Download Raw Videos.
-   `--gtea_videos`: Download GTEA Videos.
-   `--gtea_png`: Download Uncompressed PNG.
-   `--hand_masks_2K`: Download Hand Masks GTEA.
-   `--hand_masks_14K`: Download Hand Masks EGTEA+.
-   `--trimmed_actions`: Download Trimmed Actions.
-   `--gaze_data`: Download Gaze Data.
-   `--action_annotations`: Download Action Annotations.
-   `--gtea_labels_71`: Download GTEA Action Labels.
-   `--gtea_labels_61`: Download EGTEA Action Labels.
-   `--all`: Get all the data.
+   --recipes: Download the Recipes.
+   --raw_videos: Download Raw Videos.
+   --gtea_videos: Download GTEA Videos.
+   --gtea_png: Download Uncompressed PNG.
+   --hand_masks_2K: Download Hand Masks GTEA.
+   --hand_masks_14K: Download Hand Masks EGTEA+.
+   --trimmed_actions: Download Trimmed Actions.
+   --gaze_data: Download Gaze Data.
+   --action_annotations: Download Action Annotations.
+   --gtea_labels_71: Download GTEA Action Labels.
+   --gtea_labels_61: Download EGTEA Action Labels.
+   --all: Get all the data.
+   ```
 7. The final tree structure (assuming you have downloaded the whole dataset) should be the following:
 
    ```
