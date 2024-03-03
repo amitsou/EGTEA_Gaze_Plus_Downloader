@@ -96,5 +96,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #TODO: Create docs
-    #TODO: In docs add the steps to download the dataset and the tree structure of the dataset
