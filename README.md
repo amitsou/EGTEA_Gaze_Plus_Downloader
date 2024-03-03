@@ -1,6 +1,6 @@
 EGTEA Gaze + Unofficial Downloader
 ![Egtea Gaze +](/assets/images/dataset_img.png)
-==================================
+============
 
 ## How to download
 
@@ -41,24 +41,23 @@ EGTEA Gaze + Unofficial Downloader
    ```bash
    cd src/
    python scrapper.py [options] --out <output_directory>
+   #In case an output directory is not provided the default directory would be /data
    ```
    The script can be executed using the following arguments:
 
-   ```bash
-   --readme: Download the Readme file.
-   --recipes: Download the Recipes.
-   --raw_videos: Download Raw Videos.
-   --gtea_videos: Download GTEA Videos.
-   --gtea_png: Download Uncompressed PNG.
-   --hand_masks_2K: Download Hand Masks GTEA.
-   --hand_masks_14K: Download Hand Masks EGTEA+.
-   --trimmed_actions: Download Trimmed Actions.
-   --gaze_data: Download Gaze Data.
-   --action_annotations: Download Action Annotations.
-   --gtea_labels_71: Download GTEA Action Labels.
-   --gtea_labels_61: Download EGTEA Action Labels.
-   --all: Get all the data.
-   ```
+   `--readme`: Download the Readme file.
+   `--recipes`: Download the Recipes.
+   `--raw_videos`: Download Raw Videos.
+   `--gtea_videos`: Download GTEA Videos.
+   `--gtea_png`: Download Uncompressed PNG.
+   `--hand_masks_2K`: Download Hand Masks GTEA.
+   `--hand_masks_14K`: Download Hand Masks EGTEA+.
+   `--trimmed_actions`: Download Trimmed Actions.
+   `--gaze_data`: Download Gaze Data.
+   `--action_annotations`: Download Action Annotations.
+   `--gtea_labels_71`: Download GTEA Action Labels.
+   `--gtea_labels_61`: Download EGTEA Action Labels.
+   `--all`: Get all the data.
 7. The final tree structure (assuming you have downloaded the whole dataset) should be the following:
 
    ```
@@ -92,12 +91,13 @@ EGTEA Gaze + Unofficial Downloader
         └── video_links.txt
    ```
 8. Citing
-    ```
-    @inproceedings{li2018eye,
-        title={In the eye of beholder: Joint learning of gaze and actions in first person video},
-        author={Li, Yin and Liu, Miao and Rehg, James M},
-        booktitle={Proceedings of the European conference on computer vision (ECCV)},
-        pages={619--635},
-        year={2018}
-    }
-    ```
+
+   ```
+   @inproceedings{li2018eye,
+       title={In the eye of beholder: Joint learning of gaze and actions in first person video},
+       author={Li, Yin and Liu, Miao and Rehg, James M},
+       booktitle={Proceedings of the European conference on computer vision (ECCV)},
+       pages={619--635},
+       year={2018}
+   }
+   ```
