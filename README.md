@@ -46,7 +46,7 @@ EGTEA Gaze + Unofficial Downloader
    The script can be executed using the following arguments:
 
    ```bash
-   `--readme`: Download the Readme file.
+   --readme: Download the Readme file.
    --recipes: Download the Recipes.
    --raw_videos: Download Raw Videos.
    --gtea_videos: Download GTEA Videos.
