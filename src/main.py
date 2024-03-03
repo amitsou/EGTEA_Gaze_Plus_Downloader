@@ -1,113 +1,98 @@
-from urllib.parse import urlparse
-import argparse
-import json
-import os
+from downloader.downloader import Downloader
+from utils.utils import Utils
+from db.db import *
+import pyfiglet as pyfiglet
+import time
 import sys
+import os
+import re
+import threading
 
 
-def extract_fname_from_url(url: str) -> str:
-    parsed_url = urlparse(url)
-    return os.path.basename(parsed_url.path)
+def download_file(key, url, output_directory):
+    downloader = Downloader(output_directory=output_directory)
+    download_response = downloader.download_file(url)
+    if download_response:
+        insert_to_db(key, url, Utils.get_timestamp())
 
 
-def load_json() -> dict:
-    try:
-        with open('../data/results.json') as f:
-            data = json.load(f)
-    except FileNotFoundError as e:
-        raise Exception(e)
-    return data
+def process_raw_videos(egtea_urls, egtea_dir):
+    fname = re.search(r'/([^/]+\.\w+)\?dl=0$', egtea_urls.get('Links to raw videos (28G)')).group(1)
+    raw_videos_path = os.path.join(egtea_dir, 'tmp', fname)
+    db_result = search_url(egtea_urls.get('Links to raw videos (28G)'))
 
+    if os.path.exists(raw_videos_path) and db_result:
+        video_urls = Utils.extract_video_links_from_txt(raw_videos_path)
+    else:
+        downloader = Downloader(output_directory=os.path.join(egtea_dir, 'tmp'))
+        download_response = downloader.download_file(egtea_urls.get('Links to raw videos (28G)'))
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description='Scrapper for EGTEA')
-    parser.add_argument('-r','--readme', type=str, action='store_true', help='Download the Readme file')
-    parser.add_argument('-rec','--recipes', type=str, action='store_true', help='Download the Recipes', Description='Pdf file with the recipes')
-    parser.add_argument('-raw','--raw_video', type=str,  action='store_true', help='Download Raw Videos', Description='Txt file with links to the raw videos.')
-    parser.add_argument('-v','--video', type=str, action='store_true', help='Download GTEA Videos')
-    parser.add_argument('-png','--uncompressed_png', type=str,  action='store_true', help='Download Uncompressed PNG')
-    parser.add_argument('-gtea','--hand_masks_gtea', type=str, action='store_true', help='Download Hand Masks GTEA')
-    parser.add_argument('-egtea','--hand_masks_egtea', type=str, action='store_true', help='Download Hand Masks EGTEA+')
-    parser.add_argument('-taction','--trimmed_actions', type=str, action='store_true', help='Download Trimmed Actions')
-    parser.add_argument('-g','--gaze_data', type=str, action='store_true', help='Download Gaze Data')
-    parser.add_argument('-aa','--action_annotations', type=str,  action='store_true', help='Download Action Annotations')
-    parser.add_argument('-gtea_l','--gtea_labels', type=str, action='store_true', help='Download GTEA Action Labels')
-    parser.add_argument('-egtea_l','--egtea_labels', type=str, action='store_true', help='Download EGTEA Action Labels')
-    parser.add_argument('-o','--out', type=str, action='store_true', required=True, help='Output directory to save the data')
-    parser.add_argument('-a','--all', type=str, action='store_true', help='Get all the data')
-    return parser.parse_args()
+        if download_response:
+             while not os.path.exists(raw_videos_path):
+                 time.sleep(1)
+             insert_to_db('video_links.txt', egtea_urls.get('Links to raw videos (28G)'), Utils.get_timestamp())
+    return Utils.extract_video_links_from_txt(raw_videos_path)
 
-
-
-"""
 def main():
-    args = parse_args()
+    print(Utils.ascii_to_color(pyfiglet.figlet_format("Welcom to Egtea Gaze +",font="slant"),'yellow'))
 
-    actions = {
-        'all': action_all,
-        'readme': action_readme,
-        'recipes': action_recipes,
-        'raw_video': action_raw_video,
-        'video': action_video,
-        'uncompressed_png': action_uncompressed_png,
-        'hand_masks14K': action_hand_masks14K,
-        'hand_masks20K': action_hand_masks20K,
-        'trimmed_actions': action_trimmed_actions,
-        'gaze_data': action_gaze_data,
-        'action_annotations': action_action_annotations,
-        'labels_old': action_labels_old,
-        'labels_new': action_labels_new
+    init_db()
+    egtea_urls = Utils.load_json('../data/egtea_links.json')
+    egtea_urls = {list(link.keys())[0]: list(link.values())[0] for link in egtea_urls}
+
+    args = Utils.parse_args()
+    egtea_dir = ''.join((args.out, '/EGTEA'))
+    Utils.create_directory(egtea_dir)
+
+    download_actions = {
+        'readme': ('Readme File', egtea_dir),
+        'recipes': ('Recipes', os.path.join(egtea_dir, 'Recipes')),
+        'gtea_videos': ('Videos', os.path.join(egtea_dir, 'Videos')),
+        'gtea_png': ('Uncompressed PNG Files', os.path.join(egtea_dir, 'Uncompressed_PNG')),
+        'trimmed_actions': ('Trimmed Action Clips', os.path.join(egtea_dir, 'Trimmed_Action_Clips')),
+        'gaze_data': ('Gaze Data', os.path.join(egtea_dir, 'Gaze_Data')),
+        'action_annotations': ('Action Annotations', os.path.join(egtea_dir, 'Action_Annotations')),
+        'gtea_labels_71': ('gtea_labels_71', os.path.join(egtea_dir, 'GTEA_Labels_71')),
+        'gtea_labels_61': ('gtea_labels_61', os.path.join(egtea_dir, 'GTEA_Labels_61')),
+        'hand_masks_2K': ('hand_masks_2K', os.path.join(egtea_dir, 'Hand_Masks_2K')),
+        'hand_masks_14K': ('hand_masks_14K', os.path.join(egtea_dir, 'Hand_Masks_14K')),
+        'raw_videos': ('Links to raw videos (28G)', os.path.join(egtea_dir, 'tmp'))
     }
 
-    for arg, action in actions.items():
-        if getattr(args, arg):
-            action(args)
+    file_download_mapping = {} # dicionary form:{filename: [url, output_directory]}
 
+    if args.all:
+        for action, (key, path) in download_actions.items():
+            if action != 'raw_videos':
+                url = egtea_urls.get(key)
+                if url:
+                    file_download_mapping[action] = [url, path]
+    else:
+        for action, (key, path) in download_actions.items():
+            if getattr(args, action):
+                url = egtea_urls.get(key)
+                if url:
+                    file_download_mapping[action] = [url, path]
 
-def action_all(args):
-    pass
+    if args.raw_videos or args.all:
+        raw_video_urls = process_raw_videos(egtea_urls, egtea_dir)
+        for url in raw_video_urls:
+            filename = os.path.splitext(re.search(r'/([^/]+\.\w+)\?dl=0$', url).group(1))[0]
+            if filename:
+                file_download_mapping[filename] = [url, os.path.join(args.out, 'Raw_Videos')]
 
-def action_readme(args):
-    pass
+    threads = []
+    for key, value in file_download_mapping.items():
+        if not os.path.exists(value[1]):
+            os.mkdir(value[1])
+        thread = threading.Thread(target=download_file, args=(key, value[0], value[1]))
+        threads.append(thread)
+        thread.start()
 
-def action_recipes(args):
-    pass
-
-def action_raw_video(args):
-    pass
-
-def action_video(args):
-    pass
-
-def action_uncompressed_png(args):
-    pass
-
-def action_hand_masks14K(args):
-    pass
-
-def action_hand_masks20K(args):
-    pass
-
-def action_trimmed_actions(args):
-    pass
-
-def action_gaze_data(args):
-    pass
-
-def action_action_annotations(args):
-    pass
-
-def action_labels_old(args):
-    pass
-
-def action_labels_new(args):
-    pass
-"""
-
-
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
 
 
 if __name__ == '__main__':
-    URLS = load_json()
-    #URL = URLS[0]['Readme File']
-    #readme_key, readme_value = list(URLS[0].items())[0]
+    main()

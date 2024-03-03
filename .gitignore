@@ -96,7 +96,10 @@ target/
 google-chrome-stable_current_amd64.deb
 
 #scrapy
-/src/scrapper/
+/src/scrapper/.scrapy
 
 #selenium downloader
 /src/downloader/egtea_downloader.py
+
+#dabase
+/src/egtea.db
