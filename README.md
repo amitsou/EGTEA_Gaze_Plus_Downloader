@@ -40,7 +40,7 @@ EGTEA Gaze + Unofficial Downloader
 
    ```bash
    cd src/
-   python scrapper.py [options] --out <output_directory>
+   python main.py [options] --out <output_directory>
    #In case an output directory is not provided the default directory would be /data
    ```
    The script can be executed using the following arguments:
